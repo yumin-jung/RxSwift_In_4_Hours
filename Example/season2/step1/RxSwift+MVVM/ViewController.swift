@@ -6,19 +6,19 @@
 //  Copyright © 2019 iamchiwon. All rights reserved.
 //
 
-import RxSwift
+//import RxSwift
 import SwiftyJSON
 import UIKit
 
 let MEMBER_LIST_URL = "https://my.api.mockaroo.com/members_with_avatar.json?key=44ce18f0"
 
-class 나중에생기는데이터<T> {
+class Observable<T> {
     private let task: (@escaping (T) -> Void) -> Void
     init(task: @escaping (@escaping (T) -> Void) -> Void) {
         self.task = task
     }
     
-    func 나중에오면(_ f: @escaping (T) -> Void) {
+    func subscribe(_ f: @escaping (T) -> Void) {
         task(f)
     }
 }
@@ -43,12 +43,13 @@ class ViewController: UIViewController {
         })
     }
     
-    func downloadJson(_ url: String) -> 나중에생기는데이터<String?> {
-        return 나중에생기는데이터() { f in
+    func downloadJson(_ url: String) -> Observable<String?> {
+        return Observable() { f in
             DispatchQueue.global().async {
                 let url = URL(string: url)!
                 let data = try! Data(contentsOf: url)
                 let json = String(data: data, encoding: .utf8)
+                
                 DispatchQueue.main.async {
                     f(json)
                 }
@@ -64,9 +65,8 @@ class ViewController: UIViewController {
         editView.text = ""
         setVisibleWithAnimation(self.activityIndicator, true)
         
-        let json: 나중에생기는데이터<String?> = downloadJson(MEMBER_LIST_URL)
-        
-        json.나중에오면 { json in
+        downloadJson(MEMBER_LIST_URL)
+            .subscribe { json in
             self.editView.text = json
             self.setVisibleWithAnimation(self.activityIndicator, false)
         }

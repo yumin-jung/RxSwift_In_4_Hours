@@ -31,6 +31,17 @@ class ViewController: UIViewController {
             self?.view.layoutIfNeeded()
         })
     }
+    
+    func downloadJson(_ url: String, _ completion: ((String?) -> Void)?) {
+        DispatchQueue.global().async {
+            let url = URL(string: url)!
+            let data = try! Data(contentsOf: url)
+            let json = String(data: data, encoding: .utf8)
+            DispatchQueue.main.async {
+                completion?(json)
+            }
+        }
+    }
 
     // MARK: SYNC
 
@@ -38,16 +49,25 @@ class ViewController: UIViewController {
 
     @IBAction func onLoad() {
         editView.text = ""
-        self.setVisibleWithAnimation(self.activityIndicator, true)
+        setVisibleWithAnimation(self.activityIndicator, true)
         
-        DispatchQueue.global().async {
-            let url = URL(string: MEMBER_LIST_URL)!
-            let data = try! Data(contentsOf: url)
-            let json = String(data: data, encoding: .utf8)
+        downloadJson(MEMBER_LIST_URL) { json in
+            self.editView.text = json
+            self.setVisibleWithAnimation(self.activityIndicator, false)
             
-            DispatchQueue.main.async {
+            self.downloadJson(MEMBER_LIST_URL) { json in
                 self.editView.text = json
                 self.setVisibleWithAnimation(self.activityIndicator, false)
+                
+                self.downloadJson(MEMBER_LIST_URL) { json in
+                    self.editView.text = json
+                    self.setVisibleWithAnimation(self.activityIndicator, false)
+                    
+                    self.downloadJson(MEMBER_LIST_URL) { json in
+                        self.editView.text = json
+                        self.setVisibleWithAnimation(self.activityIndicator, false)
+                    }
+                }
             }
         }
     }

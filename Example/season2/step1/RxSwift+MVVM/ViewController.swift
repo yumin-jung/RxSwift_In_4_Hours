@@ -45,12 +45,27 @@ class ViewController: UIViewController {
     
     func downloadJson(_ url: String) -> Observable<String?> {
         // 1. 비동기로 생기는 데이터를 Observable로 감싸서 리턴하는 방법
-        return Observable.just("Hello World")
-//        return Observable.create { emitter in
-//            emitter.onNext("Hello World")
-//            emitter.onCompleted()
-//            return Disposables.create()
-//        }
+        return Observable.create { emitter in
+            let url = URL(string: url)!
+            let task = URLSession.shared.dataTask(with: url) { data, _, err in
+                guard err == nil else {
+                    emitter.onError(err!)
+                    return
+                }
+                
+                if let dat = data, let json = String(data: dat, encoding: .utf8) {
+                    emitter.onNext(json)
+                }
+                
+                emitter.onCompleted()
+            }
+            
+            task.resume()
+            
+            return Disposables.create {
+                task.cancel()
+            }
+        }
     }
 
     // MARK: SYNC
@@ -63,17 +78,13 @@ class ViewController: UIViewController {
         
         // 2. Observable로 오는 데이터를 받아서 처리하는 방법
         _ = downloadJson(MEMBER_LIST_URL)
-            .subscribe { event in
-                switch event {
-                case .next:
-                    break
-                    
-                case .error:
-                    break
-                    
-                case .completed:
-                    break
-                }
-        }
+            .map { json in json?.count ?? 0}
+            .observeOn(MainScheduler.instance).filter { cnt in cnt > 0 }
+            .map { "\($0)" }
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { json in
+                self.editView.text = json
+                self.setVisibleWithAnimation(self.activityIndicator, false)
+            })
     }
 }

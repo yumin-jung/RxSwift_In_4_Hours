@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import RxSwift
 
 class MenuListViewModel {
     
@@ -18,5 +19,7 @@ class MenuListViewModel {
     ]
     
     var itemsCount: Int = 5
-    var totalPrice: Int = 10_000
+    
+    // Subject
+    var totalPrice: PublishSubject<Int> = PublishSubject()
 }

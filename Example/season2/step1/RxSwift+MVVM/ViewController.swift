@@ -12,20 +12,11 @@ import UIKit
 
 let MEMBER_LIST_URL = "https://my.api.mockaroo.com/members_with_avatar.json?key=44ce18f0"
 
-//class Observable<T> {
-//    private let task: (@escaping (T) -> Void) -> Void
-//    init(task: @escaping (@escaping (T) -> Void) -> Void) {
-//        self.task = task
-//    }
-//    
-//    func subscribe(_ f: @escaping (T) -> Void) {
-//        task(f)
-//    }
-//}
-
 class ViewController: UIViewController {
     @IBOutlet var timerLabel: UILabel!
     @IBOutlet var editView: UITextView!
+    
+    var disposeBag = DisposeBag()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -80,11 +71,12 @@ class ViewController: UIViewController {
         let jsonObservable = downloadJson(MEMBER_LIST_URL)
         let helloObservable = Observable.just("Hello World")
         
-        _ = Observable.zip(jsonObservable, helloObservable) { $1 + "\n" + $0 }
+        Observable.zip(jsonObservable, helloObservable) { $1 + "\n" + $0 }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { json in
                 self.editView.text = json
                 self.setVisibleWithAnimation(self.activityIndicator, false)
             })
+            .disposed(by: disposeBag)
     }
 }

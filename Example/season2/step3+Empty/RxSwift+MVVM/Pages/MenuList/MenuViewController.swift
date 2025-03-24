@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 class MenuViewController: UIViewController {
     // MARK: - Life Cycle
@@ -15,6 +17,9 @@ class MenuViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        itemCountLabel.text = "\(viewModel.itemsCount)"
+        totalPrice.text = viewModel.totalPrice.currencyKR()
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -44,7 +49,12 @@ class MenuViewController: UIViewController {
     @IBAction func onOrder(_ sender: UIButton) {
         // TODO: no selection
         // showAlert("Order Fail", "No Orders")
-        performSegue(withIdentifier: "OrderViewController", sender: nil)
+//        performSegue(withIdentifier: "OrderViewController", sender: nil)
+        
+        viewModel.totalPrice += 100
+        
+        itemCountLabel.text = "\(viewModel.itemsCount)"
+        totalPrice.text = viewModel.totalPrice.currencyKR()
     }
 }
 

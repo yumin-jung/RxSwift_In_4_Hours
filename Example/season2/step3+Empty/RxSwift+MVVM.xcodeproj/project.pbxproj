@@ -149,9 +149,9 @@
 		A1869B892360A78C0088AA9A /* MenuList */ = {
 			isa = PBXGroup;
 			children = (
-				7E474BD22D912E31000D91D0 /* MenuListViewModel.swift */,
 				A168F0A122F7FB2C00A9E178 /* MenuViewController.swift */,
 				A168F0BB22FAF9B800A9E178 /* MenuItemTableViewCell.swift */,
+				7E474BD22D912E31000D91D0 /* MenuListViewModel.swift */,
 			);
 			path = MenuList;
 			sourceTree = "<group>";

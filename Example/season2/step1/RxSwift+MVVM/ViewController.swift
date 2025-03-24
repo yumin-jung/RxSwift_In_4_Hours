@@ -45,11 +45,12 @@ class ViewController: UIViewController {
     
     func downloadJson(_ url: String) -> Observable<String?> {
         // 1. 비동기로 생기는 데이터를 Observable로 감싸서 리턴하는 방법
-        return Observable.create { emitter in
-            emitter.onNext("Hello World")
-            emitter.onCompleted()
-            return Disposables.create()
-        }
+        return Observable.just("Hello World")
+//        return Observable.create { emitter in
+//            emitter.onNext("Hello World")
+//            emitter.onCompleted()
+//            return Disposables.create()
+//        }
     }
 
     // MARK: SYNC
